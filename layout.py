@@ -8,6 +8,11 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.button import Button
 
+from kivy.uix.image import AsyncImage
+
+from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import SlideTransition
+
 KOREAN_FONT = os.getcwd() + '/fonts/Nanum-Gothic.ttf'
 
 class RootWidget(BoxLayout):
@@ -35,13 +40,13 @@ class MainLayout(FloatLayout):
         
 class SearchLayout(GridLayout):
     """ 
-    검색을 할 수 있는 2cols을 가진 gridlaout 생성 
+    검색을 할 수 있는 2cols을 가진 gridlayout 생성 
     
     """
     def __init__(self, **kwargs):
         super(SearchLayout, self).__init__(**kwargs)
         self.cols = 1
-        
+        self.input_txt = None
         self.inside = GridLayout() 
         self.inside.cols = 2
         
@@ -71,3 +76,56 @@ class SearchLayout(GridLayout):
     def on_text(self, instance, value):
         print('The widget', instance, 'have:', value)    
         self.input_txt = value
+        
+
+class ScreenLayout(Screen):
+    def __init__(self, **kwargs):
+        super(ScreenLayout, self).__init__(**kwargs)
+        
+        root = BoxLayout(orientation='vertical')
+        # root.add_widget(Label(text=self.name, font_size=50))
+        m = MainLayout() # 메인 레이아웃 FloatLayout
+            
+        root.add_widget(m)
+        m.add_widget(
+            AsyncImage(
+                source="images/meme.png",
+                size_hint= (1, .5),
+                pos_hint={'center_x':.5, 'center_y':.5}))
+        
+        s = SearchLayout()
+        root.add_widget(s)
+        # Add another layout to handle the navigation
+        # and set the height of navigation to 20%
+        # of the CustomScreen
+        self.navig = BoxLayout(size_hint_y=0.2)
+
+        # Create buttons with a custom text
+        self.prev = Button(text='Previous')
+        self.next = Button(text='Next')
+
+        # Bind to 'on_release' events of Buttons
+        self.prev.bind(on_release=self.switch_prev)
+        self.next.bind(on_release=self.switch_prev)
+
+        # Add buttons to navigation
+        # and the navigation to layout
+        self.navig.add_widget(self.prev)
+        self.navig.add_widget(self.next)
+        root.add_widget(self.navig)
+
+        # And add the layout to the Screen
+        self.add_widget(root)
+
+    def switch_prev(self, *args):
+        self.manager.transition = SlideTransition(direction="right")
+        self.manager.current = self.manager.previous()
+
+    def switch_next(self, *args):
+        self.manager.transition = SlideTransition(direction="right")
+        self.manager.current = self.manager.next()
+        self.remove_widget(self.next)
+        
+    def remove_button(self, instance):
+        self.remove_widget(instance)
+ 
