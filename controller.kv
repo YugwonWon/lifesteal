@@ -1,0 +1,21 @@
+#:kivy 1.0
+
+<Controller>:
+    label_wid: button01_label
+
+    BoxLayout:
+        orientation: 'vertical'
+        padding: 10
+
+        Button:
+            text: '밈 검색'
+            size_hint: 0.3, 0.1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.1}
+            on_press: root.bttn01_clicked()
+
+        Label:
+            id: button01_label
+            text: ''
+            size_hint: 0.3, 0.1
+            pos_hint: {'center_x': 0.5, 'center_y': 0.7}
+
